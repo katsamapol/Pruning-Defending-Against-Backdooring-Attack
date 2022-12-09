@@ -16,7 +16,10 @@ python train_and_prune.py --clean_valid="data/cl/valid.h5" --clean_test="data/cl
 
 # To list all configurable parameters use: 
 python train_and_prune.py -h
+```
 
 ## How to test your pruning defense
+```
 # Easily start a new testing by indicating your models save path and run: 
 python test_robustness.py --save_path="models/repaired/"
+```
