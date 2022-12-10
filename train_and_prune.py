@@ -85,7 +85,6 @@ def train_and_prune(clean_accuracy, B, B_clone, save_path):
         # Update weights and biases of B_clone
         B_clone.get_layer('conv_'+str(layer)).set_weights([lastConvLayerWeights, lastConvLayerBiases])
 
-
         # Evaluate the updated model's (B_clone) clean validation accuracy
         cl_label_p_valid = np.argmax(B_clone(cl_x_valid), axis=1)
         clean_accuracy_valid = np.mean(np.equal(cl_label_p_valid, cl_y_valid)) * 100
@@ -98,76 +97,30 @@ def train_and_prune(clean_accuracy, B, B_clone, save_path):
         
         # print(f"Round {i} of {len(idxToPrune)} drop: {drop*100:.2f}%, new clean: {clean_accuracy_valid:.2f}%, old clean: {clean_accuracy:.2f}%")
         pruned = i/len(idxToPrune)
-        print(f"Round {i} of {len(idxToPrune)} pruned: {pruned*100:.2f}%, new clean accuracy: {clean_accuracy_valid:.2f}%, attack success rate: {attack_success_rate:.2f}%")
+        print(f"Round {i} of {len(idxToPrune)} pruned: {pruned*100:05.2f}%, new clean accuracy: {clean_accuracy_valid:.2f}%, attack success rate: {attack_success_rate:.2f}%")
         pruned_arr.append(pruned)
         clean_accuracy_valid_arr.append(clean_accuracy_valid)
         attack_success_rate_arr.append(attack_success_rate)
 
+        # Save B_clone as B_prime and break
         if (drop >= 0.02) and (save1 == False):
-            # Save B_clone as B_prime and break
+            
             print(f"Accuracy dropped by >=2%, current acc. is {clean_accuracy_valid:.2f}%")
             print("save model as \"g_net_00_02_percent.h5\"")
             B_clone.save(save_path+'g_net_00_02_percent.h5')
             save1 = True
         elif (drop >= 0.04) and (save2 == False) :
-            # Save B_clone as B_prime and break
             print(f"Accuracy dropped by >=4%, current acc. is {clean_accuracy_valid:.2f}%")
             print("save model as \"g_net_00_04_percent.h5\"")
             B_clone.save(save_path+'g_net_00_04_percent.h5')
             save2 = True
         elif (drop >= 0.08):
-            # Save B_clone as B_prime and break
-            drop_text = str(f"{drop*100:4.2f}").replace(".","_")
-            print(f"Accuracy dropped by >={drop*100:4.2f}%, current acc. is {clean_accuracy_valid:.2f}%")
+            drop_text = str(f"{drop*100:05.2f}").replace(".","_")
+            print(f"Accuracy dropped by >={drop*100:05.2f}%, current acc. is {clean_accuracy_valid:.2f}%")
             print(f"save model as \"g_net_{drop_text}_percent.h5\"")
             B_clone.save(save_path+f'g_net_{drop_text}_percent.h5')
 
     return pruned_arr, clean_accuracy_valid_arr, attack_success_rate_arr
-        # If drop in clean_accuracy_valid is just greater (or equal to) than the desired threshold compared to clean_accuracy, then save B_clone as B_prime instead of B then break:
-        # if (drop >= 0.02) and (save1 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=2%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_2_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_2_percent.h5')
-        #     save1 = True
-        # elif (drop >= 0.04) and (save2 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=4%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_4_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_4_percent.h5')
-        #     save2 = True
-        # elif (drop >= 0.8) and (save3 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=8%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_8_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_8_percent.h5')
-        #     save3 = True
-        # elif (drop >= 0.14) and (save4 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=14%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_14_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_20_percent.h5')
-        #     save4 = True
-        # elif (drop >= 0.22) and (save5 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=40%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_40_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_40_percent.h5')
-        #     save5 = True
-        # elif (drop >= 0.44) and (save6 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=60%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_60_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_60_percent.h5')
-        #     save6 = True
-        # elif (drop >= 0.72) and (save7 == False) :
-        #     # Save B_clone as B_prime and break
-        #     print(f"Accuracy dropped by >=80%, current acc. is {clean_accuracy_valid:.2f}%")
-        #     print("save model as \"g_net_80_percent.h5\"")
-        #     B_clone.save(save_path+'g_net_80_percent.h5')
-        #     save7 = True
-        #     print("Break")
-        #     break
     
 
 def _parse_arguments():
